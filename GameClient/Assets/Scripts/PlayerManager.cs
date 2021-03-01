@@ -11,6 +11,7 @@ public class PlayerManager : MonoBehaviour
 	public string username;
 	public int colorIndex;
 	public Role role = Role.Unknown;
+	public bool isPartyLeader = false;
 	public TextMeshProUGUI usernameText;
 	public float interpolateMovementFactor;
 	public SpriteRenderer colorSpriteRenderer;

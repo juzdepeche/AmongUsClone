@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,8 +35,14 @@ public class NetworkManager : MonoBehaviour
 		Server.Stop();
 	}
 
-	public Player InstantiatePlayer()
+	public Player InstantiatePlayer(string _roomId)
 	{
-		return Instantiate(playerPrefab, PlayerHelper.GetRandomSpawnPosition(), Quaternion.identity).GetComponent<Player>();
+		// todo roomid get map position
+		return Instantiate(playerPrefab, PlayerHelper.GetRandomPreGameLobbySpawnPosition(_roomId), Quaternion.identity).GetComponent<Player>();
+	}
+
+	public GameObject InstantiateRoom(string _roomId)
+	{
+		return RoomManager.CreateRoom(_roomId);
 	}
 }

@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
 
 	public GameObject startMenu;
 	public InputField usernameField;
+	public InputField roomField;
 
 	private void Awake()
 	{
@@ -32,10 +33,13 @@ public class UIManager : MonoBehaviour
 	private IEnumerator AutoConnectToServer()
 	{
 		yield return new WaitForSeconds(5f);
+
 		string username = BuildHelper.GetArg(BuildParameter.Username);
-		if (username != null)
+		string room = BuildHelper.GetArg(BuildParameter.Room);
+		if (username != null && room != null)
 		{
 			usernameField.text = username;
+			roomField.text = room;
 			ConnectToServer();
 		}
 	}

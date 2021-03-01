@@ -8,18 +8,37 @@ public class ServerHandle
 	{
 		int _clientIdCheck = _packet.ReadInt();
 		string _username = _packet.ReadString();
+		string _roomId = _packet.ReadString();
 
-		Debug.Log($"{Server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}.");
+		Debug.Log($"{Server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient} in room {_roomId}.");
 		if (_fromClient != _clientIdCheck)
 		{
 			Debug.Log($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
 		}
-		Server.clients[_fromClient].SendIntoGame(_username);
+
+		bool _isPartyLeader = false;
+		if (!Server.rooms.ContainsKey(_roomId))
+		{
+			Server.rooms.Add(_roomId, new Room(_roomId));
+			Vector3 _mapPosition = NetworkManager.instance.InstantiateRoom(_roomId).transform.position;
+			Server.rooms[_roomId].position = _mapPosition;
+
+			_isPartyLeader = true;
+		}
+
+		Server.rooms[_roomId].clients.Add(_fromClient, Server.clients[_fromClient]);
+		Server.clients[_fromClient].SendIntoGame(_username, _roomId);
+		Server.clients[_fromClient].roomId = _roomId;
+		Server.clients[_fromClient].player.isPartyLeader = _isPartyLeader;
+		ServerSend.SetPartyLeader(_fromClient, _isPartyLeader);
+		ServerSend.MapPosition(_fromClient, Server.rooms[_roomId].position);
 	}
 
 	public static void PlayerMovement(int _fromClient, Packet _packet)
 	{
-		if (GameLogic.instance.inMeeting) return;
+		//todo roomid rename gamelogic to gamemanager
+		GameLogic roomManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(_fromClient));
+		if (roomManager.inMeeting) return;
 
 		Player player = PlayerHelper.GetPlayerById(_fromClient);
 		if (player.venting) return;
@@ -54,7 +73,8 @@ public class ServerHandle
 			Player player = Server.clients[_fromClient].player;
 			if (player.canReportTarget)
 			{
-				GameLogic.instance.CallMeeting(_fromClient);
+				GameLogic roomManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(_fromClient));
+				roomManager.CallMeeting(_fromClient);
 			}
 		}
 	}
@@ -99,7 +119,7 @@ public class ServerHandle
 				player.taskIsDoing.doneByPlayerId = _fromClient;
 				player.taskIsDoing.taskObject.GetComponent<SpriteRenderer>().color = Color.green;
 
-				ServerSend.TaskDone(player.taskIsDoing);
+				ServerSend.TaskDone(PlayerHelper.GetPlayerRoomId(_fromClient), player.taskIsDoing);
 			}
 		}
 	}
@@ -139,7 +159,8 @@ public class ServerHandle
 			if (player.role == Role.Imposter && player.currentVent != null && player.venting)
 			{
 				int _toVentId = _packet.ReadInt();
-				foreach (GameObject _vent in GameLogic.instance.vents)
+				GameLogic roomGameManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(_fromClient));
+				foreach (GameObject _vent in roomGameManager.vents)
 				{
 					if (_vent.GetComponent<Vent>().id == _toVentId)
 					{
@@ -156,6 +177,21 @@ public class ServerHandle
 				//problem
 				player.venting = false;
 				ServerSend.PlayerVentOut(_fromClient);
+			}
+		}
+	}
+
+	public static void StartGame(int _fromClient, Packet _packet)
+	{
+		int _clientIdCheck = _packet.ReadInt();
+		if (_fromClient == _clientIdCheck)
+		{
+			Player player = PlayerHelper.GetPlayerById(_fromClient);
+			GameLogic roomGameManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(_fromClient));
+			if (player.isPartyLeader && !roomGameManager.hasGameStarted)
+			{
+				// todo restart game
+				roomGameManager.StartGame();
 			}
 		}
 	}

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class ServerSend
 {
+	#region Send Data methods
 	/// <summary>Sends a packet to a client via TCP.</summary>
 	/// <param name="_toClient">The client to send the packet the packet to.</param>
 	/// <param name="_packet">The packet to send to the client.</param>
@@ -49,6 +50,34 @@ public class ServerSend
 		}
 	}
 
+	/// <summary>Sends a packet to all clients in a specific room via TCP.</summary>
+	/// <param name="_roomId">The specific room id.</param>
+	/// <param name="_packet">The packet to send.</param>
+	private static void SendTCPDataToAll(string _roomId, Packet _packet)
+	{
+		_packet.WriteLength();
+		foreach (Client _client in Server.rooms[_roomId].clients.Values)
+		{
+			_client.tcp.SendData(_packet);
+		}
+	}
+
+	/// <summary>Sends a packet to all clients except one via TCP.</summary>
+	/// <param name="_roomId">The specific room id.</param>
+	/// <param name="_exceptClient">The client to NOT send the data to.</param>
+	/// <param name="_packet">The packet to send.</param>
+	private static void SendTCPDataToAll(string _roomId, int _exceptClient, Packet _packet)
+	{
+		_packet.WriteLength();
+		foreach (Client _client in Server.rooms[_roomId].clients.Values)
+		{
+			if (_client.id != _exceptClient)
+			{
+				_client.tcp.SendData(_packet);
+			}
+		}
+	}
+
 	/// <summary>Sends a packet to all clients via UDP.</summary>
 	/// <param name="_packet">The packet to send.</param>
 	private static void SendUDPDataToAll(Packet _packet)
@@ -73,6 +102,35 @@ public class ServerSend
 			}
 		}
 	}
+
+	/// <summary>Sends a packet to all clients via UDP.</summary>
+	/// <param name="_roomId">The specific room id.</param>
+	/// <param name="_packet">The packet to send.</param>
+	private static void SendUDPDataToAll(string _roomId, Packet _packet)
+	{
+		_packet.WriteLength();
+		foreach (Client _client in Server.rooms[_roomId].clients.Values)
+		{
+			_client.udp.SendData(_packet);
+		}
+	}
+
+	/// <summary>Sends a packet to all clients except one via UDP.</summary>
+	/// <param name="_roomId">The specific room id.</param>
+	/// <param name="_exceptClient">The client to NOT send the data to.</param>
+	/// <param name="_packet">The packet to send.</param>
+	private static void SendUDPDataToAll(string _roomId, int _exceptClient, Packet _packet)
+	{
+		_packet.WriteLength();
+		foreach (Client _client in Server.rooms[_roomId].clients.Values)
+		{
+			if (_client.id != _exceptClient)
+			{
+				_client.udp.SendData(_packet);
+			}
+		}
+	}
+	#endregion
 
 	#region Packets
 	/// <summary>Sends a welcome message to the given client.</summary>
@@ -110,14 +168,15 @@ public class ServerSend
 	/// <param name="_player">The player whose position to update.</param>
 	public static void PlayerPosition(Player _player)
 	{
-		if (GameLogic.instance.inMeeting || _player.venting) return;
+		GameLogic roomGameManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(_player.id));
+		if (roomGameManager.inMeeting || _player.venting) return;
 
 		using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
 		{
 			_packet.Write(_player.id);
 			_packet.Write(_player.transform.position);
 
-			SendUDPDataToAll(_packet);
+			SendUDPDataToAll(_player.roomId, _packet);
 		}
 	}
 
@@ -128,7 +187,7 @@ public class ServerSend
 			_packet.Write(_playerId);
 			_packet.Write(_position);
 
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(PlayerHelper.GetPlayerRoomId(_playerId), _packet);
 		}
 	}
 
@@ -149,17 +208,17 @@ public class ServerSend
 		{
 			_packet.Write(_playerId);
 
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(PlayerHelper.GetPlayerRoomId(_playerId), _packet);
 		}
 	}
 
-	public static void PlayerRespawned(Player _player)
+	public static void PlayerRespawned(int _playerId)
 	{
 		using (Packet _packet = new Packet((int)ServerPackets.playerRespawned))
 		{
-			_packet.Write(_player.id);
+			_packet.Write(_playerId);
 
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(PlayerHelper.GetPlayerRoomId(_playerId), _packet);
 		}
 	}
 
@@ -180,7 +239,7 @@ public class ServerSend
 			_packet.Write(_playerId);
 			_packet.Write(_spawnDeadBody);
 
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(PlayerHelper.GetPlayerRoomId(_playerId), _packet);
 		}
 	}
 
@@ -200,7 +259,7 @@ public class ServerSend
 		{
 			_packet.Write(_reporterId);
 
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(PlayerHelper.GetPlayerRoomId(_reporterId), _packet);
 		}
 	}
 
@@ -223,7 +282,7 @@ public class ServerSend
 			_packet.Write(_isSuccess);
 			_packet.Write(_fromId);
 
-			SendTCPDataToAll(_fromId, _packet);
+			SendTCPDataToAll(PlayerHelper.GetPlayerRoomId(_fromId), _fromId, _packet);
 		}
 	}
 
@@ -233,15 +292,15 @@ public class ServerSend
 		{
 			_packet.Write(_votedOutId);
 
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(PlayerHelper.GetPlayerRoomId(_votedOutId), _packet);
 		}
 	}
 
-	public static void RemoveVoteResults()
+	public static void RemoveVoteResults(string _roomId)
 	{
 		using (Packet _packet = new Packet((int)ServerPackets.removeVoteResults))
 		{
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(_roomId, _packet);
 		}
 	}
 
@@ -289,14 +348,14 @@ public class ServerSend
 		}
 	}
 
-	public static void TaskDone(Task _task)
+	public static void TaskDone(string _roomId, Task _task)
 	{
 		using (Packet _packet = new Packet((int)ServerPackets.taskDone))
 		{
 			_packet.Write(_task.id);
 			_packet.Write((int)_task.taskType);
 
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(_roomId, _packet);
 		}
 	}
 
@@ -316,7 +375,7 @@ public class ServerSend
 		{
 			_packet.Write(_playerId);
 
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(PlayerHelper.GetPlayerRoomId(_playerId), _packet);
 		}
 	}
 
@@ -326,7 +385,7 @@ public class ServerSend
 		{
 			_packet.Write(_playerId);
 
-			SendTCPDataToAll(_packet);
+			SendTCPDataToAll(PlayerHelper.GetPlayerRoomId(_playerId), _packet);
 		}
 	}
 
@@ -351,6 +410,26 @@ public class ServerSend
 	{
 		using (Packet _packet = new Packet((int)ServerPackets.playerVentUpdated))
 		{
+			SendTCPData(_playerId, _packet);
+		}
+	}
+
+	public static void MapPosition(int _playerId, Vector3 _mapPosition)
+	{
+		using (Packet _packet = new Packet((int)ServerPackets.mapPosition))
+		{
+			_packet.Write(_mapPosition);
+
+			SendTCPData(_playerId, _packet);
+		}
+	}
+
+	public static void SetPartyLeader(int _playerId, bool _isPartyLeader)
+	{
+		using (Packet _packet = new Packet((int)ServerPackets.setPartyLeader))
+		{
+			_packet.Write(_isPartyLeader);
+
 			SendTCPData(_playerId, _packet);
 		}
 	}

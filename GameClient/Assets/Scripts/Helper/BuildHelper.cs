@@ -26,6 +26,8 @@ public class BuildHelper
 		{
 			case BuildParameter.Username:
 				return "username";
+			case BuildParameter.Room:
+				return "room";
 			case BuildParameter.GoTo:
 				return "goTo";
 		}
@@ -37,6 +39,7 @@ public class BuildHelper
 public enum BuildParameter
 {
 	Username,
+	Room,
 	GoTo
 }
 

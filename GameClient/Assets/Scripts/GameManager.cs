@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
 	public GameObject localPlayerPrefab;
 	public GameObject deadBodyPrefab;
 	public GameObject playerPrefab;
+	public GameObject map;
 	public List<Color> playerColors = new List<Color>();
 
 	private void Awake()
@@ -71,5 +72,10 @@ public class GameManager : MonoBehaviour
 				_player.MakeBodyTransparent();
 			}
 		}
+	}
+
+	public void SetMapPosition(Vector3 _mapPosition)
+	{
+		map.transform.position = _mapPosition;
 	}
 }

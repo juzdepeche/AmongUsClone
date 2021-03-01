@@ -321,6 +321,8 @@ public class Client : MonoBehaviour
 			{ (int)ServerPackets.playerVentOut, ClientHandle.PlayerVentOut },
 			{ (int)ServerPackets.possibleVentsDirections, ClientHandle.PossibleVentsDirections },
 			{ (int)ServerPackets.playerVentUpdated, ClientHandle.PlayerVentUpdated },
+			{ (int)ServerPackets.mapPosition, ClientHandle.MapPosition },
+			{ (int)ServerPackets.setPartyLeader, ClientHandle.SetPartyLeader },
 		};
 		Debug.Log("Initialized packets.");
 	}

@@ -9,6 +9,9 @@ public class Server
 {
 	public static int MaxPlayers { get; private set; }
 	public static int Port { get; private set; }
+
+	public static Dictionary<string, Room> rooms = new Dictionary<string, Room>();
+
 	public static Dictionary<int, Client> clients = new Dictionary<int, Client>();
 	public delegate void PacketHandler(int _fromClient, Packet _packet);
 	public static Dictionary<int, PacketHandler> packetHandlers;
@@ -135,8 +138,8 @@ public class Server
 			{ (int)ClientPackets.interact, ServerHandle.Interact },
 			{ (int)ClientPackets.taskDone, ServerHandle.TaskDone },
 			{ (int)ClientPackets.vent, ServerHandle.Vent },
-			{ (int)ClientPackets.goToSend, ServerHandle.GoToSend }
-
+			{ (int)ClientPackets.goToSend, ServerHandle.GoToSend },
+			{ (int)ClientPackets.startGame, ServerHandle.StartGame }
 		};
 		Debug.Log("Initialized packets.");
 	}

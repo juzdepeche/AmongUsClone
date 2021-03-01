@@ -138,7 +138,7 @@ public class ClientHandle : MonoBehaviour
 		int _taskId = _packet.ReadInt();
 		TaskType _taskType = (TaskType)_packet.ReadInt();
 
-		PlayerManager _player = PlayerHelper.GetPlayerThisPlayer();
+		PlayerManager _player = PlayerHelper.GetThisPlayer();
 		_player.taskIsDoingId = _taskId;
 
 		TaskManager.instance.DoTask(_taskType);
@@ -199,7 +199,7 @@ public class ClientHandle : MonoBehaviour
 		int length = _packet.ReadInt();
 
 		Dictionary<int, Vector3> ventsPositions = new Dictionary<int, Vector3>();
-		PlayerManager player = PlayerHelper.GetPlayerThisPlayer();
+		PlayerManager player = PlayerHelper.GetThisPlayer();
 		for (int i = 0; i < length; i++)
 		{
 			int _ventId = _packet.ReadInt();
@@ -214,5 +214,20 @@ public class ClientHandle : MonoBehaviour
 	public static void PlayerVentUpdated(Packet _packet)
 	{
 		// PlayerHelper.GetPlayerThisPlayer().HideArrows();
+	}
+
+	public static void MapPosition(Packet _packet)
+	{
+		Vector3 _mapPosition = _packet.ReadVector3();
+
+		GameManager.instance.SetMapPosition(_mapPosition);
+	}
+
+	public static void SetPartyLeader(Packet _packet)
+	{
+		bool _isPartyLeader = _packet.ReadBool();
+
+		PlayerHelper.GetThisPlayer().isPartyLeader = _isPartyLeader;
+		UIControl.instance.startButton.enabled = _isPartyLeader;
 	}
 }

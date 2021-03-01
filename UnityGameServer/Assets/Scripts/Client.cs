@@ -10,6 +10,7 @@ public class Client
 	public static int dataBufferSize = 4096;
 
 	public int id;
+	public string roomId;
 	public Player player;
 	public TCP tcp;
 	public UDP udp;
@@ -210,15 +211,15 @@ public class Client
 
 	/// <summary>Sends the client into the game and informs other clients of the new player.</summary>
 	/// <param name="_playerName">The username of the new player.</param>
-	public void SendIntoGame(string _playerName)
+	public void SendIntoGame(string _playerName, string _roomId)
 	{
-		player = NetworkManager.instance.InstantiatePlayer();
+		player = NetworkManager.instance.InstantiatePlayer(_roomId);
 		int colorIndex = UnityEngine.Random.Range(0, 4);
 		Role playerRole = Role.Imposter;
-		player.Initialize(id, _playerName, colorIndex, playerRole);
+		player.Initialize(id, _roomId, _playerName, colorIndex, playerRole);
 
 		// Send all players to the new player
-		foreach (Client _client in Server.clients.Values)
+		foreach (Client _client in Server.rooms[_roomId].clients.Values)
 		{
 			if (_client.player != null)
 			{
@@ -230,7 +231,7 @@ public class Client
 		}
 
 		// Send the new player to all players (including himself)
-		foreach (Client _client in Server.clients.Values)
+		foreach (Client _client in Server.rooms[_roomId].clients.Values)
 		{
 			if (_client.player != null)
 			{

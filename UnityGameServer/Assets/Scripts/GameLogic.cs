@@ -6,24 +6,16 @@ using UnityEngine;
 
 public class GameLogic : MonoBehaviour
 {
-	public static GameLogic instance;
+	public string roomId;
+	public bool hasGameStarted = false;
 	public static Dictionary<int, Vector3> deadBodyPosition = new Dictionary<int, Vector3>();
 	public List<GameObject> taskObjects = new List<GameObject>();
 	public static Dictionary<int, Task> tasks = new Dictionary<int, Task>();
 	public List<Transform> spawnPoints = new List<Transform>();
+	public List<Transform> preGameLobbySpawnPoints = new List<Transform>();
 	public List<GameObject> vents = new List<GameObject>();
 	public static float interactRadius = 3f;
 	public bool inMeeting = false;
-
-	private void Awake()
-	{
-		instance = this;
-	}
-
-	private void Start()
-	{
-		CreateTasks(5);
-	}
 
 	private void CreateTasks(int taskNumber)
 	{
@@ -59,19 +51,27 @@ public class GameLogic : MonoBehaviour
 		StartCoroutine(ShowVoteResults(4f));
 	}
 
+	public void StartGame()
+	{
+		hasGameStarted = true;
+		MoveAllPlayersToTheMeetingArea();
+		tasks = new Dictionary<int, Task>();
+		CreateTasks(5);
+	}
+
 	private IEnumerator ShowVoteResults(float _time)
 	{
 
 		yield return new WaitForSeconds(_time);
 
 		inMeeting = false;
-		ServerSend.RemoveVoteResults();
+		ServerSend.RemoveVoteResults(roomId);
 	}
 
 	private void MoveAllPlayersToTheMeetingArea()
 	{
 		var players = PlayerHelper.GetAllPlayers();
-		var playersSeats = PlayerHelper.GetRandomSeatsForEveryPlayers();
+		var playersSeats = PlayerHelper.GetRandomSeatsForEveryPlayers(roomId);
 
 		int seatIndex = 0;
 		foreach (Player _player in players)

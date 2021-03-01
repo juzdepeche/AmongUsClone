@@ -32,15 +32,15 @@ public class TaskManager : MonoBehaviour
 
 	public void LeaveTask(TaskType _taskType)
 	{
-		PlayerHelper.GetPlayerThisPlayer().taskIsDoingId = -1;
+		PlayerHelper.GetThisPlayer().taskIsDoingId = -1;
 		tasksUI.Where(t => t.taskType == _taskType).First().taskCanvas.SetActive(false);
 	}
 
 	public void LeaveTask(int _taskId, TaskType _taskType)
 	{
-		if (PlayerHelper.GetPlayerThisPlayer().taskIsDoingId == _taskId)
+		if (PlayerHelper.GetThisPlayer().taskIsDoingId == _taskId)
 		{
-			PlayerHelper.GetPlayerThisPlayer().taskIsDoingId = -1;
+			PlayerHelper.GetThisPlayer().taskIsDoingId = -1;
 			tasksUI.Where(t => t.taskType == _taskType).First().taskCanvas.SetActive(false);
 		}
 	}

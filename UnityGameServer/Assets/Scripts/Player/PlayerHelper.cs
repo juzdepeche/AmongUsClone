@@ -62,7 +62,12 @@ public class PlayerHelper : MonoBehaviour
 		return GetAllPlayers().Where(p => p.id == _id).First();
 	}
 
-	public static List<Vector3> GetRandomSeatsForEveryPlayers()
+	public static string GetPlayerRoomId(int _playerId)
+	{
+		return GetAllPlayers().Where(p => p.id == _playerId).First().roomId;
+	}
+
+	public static List<Vector3> GetRandomSeatsForEveryPlayers(string _roomId)
 	{
 		//todo: optimize by returning a shuffled list
 		List<Vector3> seatsPositions = new List<Vector3>();
@@ -70,7 +75,9 @@ public class PlayerHelper : MonoBehaviour
 		var players = PlayerHelper.GetAllPlayers();
 		int playersToPlayerCount = players.Count;
 
-		var seats = GameLogic.instance.spawnPoints;
+		GameLogic roomGameManager = RoomManager.GetRoomGameManager(_roomId);
+
+		var seats = roomGameManager.spawnPoints;
 		bool[] takenSeats = new bool[seats.Count];
 
 		while (playersToPlayerCount > 0)
@@ -88,9 +95,17 @@ public class PlayerHelper : MonoBehaviour
 		return seatsPositions;
 	}
 
-	public static Vector3 GetRandomSpawnPosition()
+	public static Vector3 GetRandomSpawnPosition(string _roomId)
 	{
-		var spawnPoints = GameLogic.instance.spawnPoints;
+		GameLogic roomGameManager = RoomManager.GetRoomGameManager(_roomId);
+		var spawnPoints = roomGameManager.spawnPoints;
+		return spawnPoints[Random.Range(0, spawnPoints.Count)].position;
+	}
+
+	public static Vector3 GetRandomPreGameLobbySpawnPosition(string _roomId)
+	{
+		GameLogic roomGameManager = RoomManager.GetRoomGameManager(_roomId);
+		var spawnPoints = roomGameManager.preGameLobbySpawnPoints;
 		return spawnPoints[Random.Range(0, spawnPoints.Count)].position;
 	}
 }

@@ -5,8 +5,10 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 	public int id;
+	public string roomId;
 	public string username;
 	public int colorIndex;
+	public bool isPartyLeader;
 	public float moveSpeed = 5f;
 	private Rigidbody2D rb;
 	public Role role;
@@ -25,9 +27,10 @@ public class Player : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 	}
 
-	public void Initialize(int _id, string _username, int _colorIndex, Role _role)
+	public void Initialize(int _id, string _roomId, string _username, int _colorIndex, Role _role)
 	{
 		id = _id;
+		roomId = _roomId;
 		username = _username;
 		colorIndex = _colorIndex;
 		role = _role;
@@ -116,7 +119,8 @@ public class Player : MonoBehaviour
 	{
 		if (taskIsDoing != null) return;
 		taskTarget = null;
-		foreach (Task _task in GameLogic.instance.GetTasks())
+		GameLogic roomGameManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(id));
+		foreach (Task _task in roomGameManager.GetTasks())
 		{
 			float distance = Vector3.Distance(transform.position, _task.position);
 			if (distance <= GameLogic.interactRadius)
@@ -143,7 +147,8 @@ public class Player : MonoBehaviour
 	private void LookForVent()
 	{
 		currentVent = null;
-		foreach (GameObject _vent in GameLogic.instance.vents)
+		GameLogic roomGameManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(id));
+		foreach (GameObject _vent in roomGameManager.vents)
 		{
 			float distance = Vector3.Distance(transform.position, _vent.transform.position);
 			if (distance <= GameLogic.interactRadius)
@@ -175,7 +180,7 @@ public class Player : MonoBehaviour
 	{
 		yield return new WaitForSeconds(5f);
 
-		ServerSend.PlayerRespawned(this);
+		ServerSend.PlayerRespawned(id);
 	}
 
 	public void Die(bool _addDeadBody)

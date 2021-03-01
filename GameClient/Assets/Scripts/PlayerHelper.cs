@@ -55,7 +55,7 @@ public class PlayerHelper : MonoBehaviour
 		return GetAllPlayers().Where(p => p.id == _id).First();
 	}
 
-	public static PlayerManager GetPlayerThisPlayer()
+	public static PlayerManager GetThisPlayer()
 	{
 		return GetPlayerById(Client.instance.myId);
 	}

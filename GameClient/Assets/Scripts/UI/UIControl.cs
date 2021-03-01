@@ -10,6 +10,7 @@ public class UIControl : MonoBehaviour
 	public Button killButton;
 	public Button useButton;
 	public Button ventButton;
+	public Button startButton;
 
 	private void Awake()
 	{
@@ -20,6 +21,7 @@ public class UIControl : MonoBehaviour
 	{
 		//todo: rendre invisible
 		// killButton.enabled = GameManager.players[Client.instance.myId].role == Role.Imposter;
+		startButton.enabled = false;
 	}
 
 	public void onReportButtonPressed()
@@ -40,6 +42,12 @@ public class UIControl : MonoBehaviour
 	public void onVentButtonPressed()
 	{
 		ClientSend.Vent();
+	}
+
+	public void onStartButtonPressed()
+	{
+		ClientSend.StartGame();
+		startButton.enabled = false;
 	}
 
 	public void setKillButtonInteractable(bool _isInteractable)

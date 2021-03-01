@@ -67,6 +67,8 @@ public class VoteRegister : MonoBehaviour
 			PlayerHelper.GetPlayerById(_votedOutPlayerId).Die(false);
 		}
 
-		GameLogic.instance.OnMeetingEnd();
+		//todo roomid make a simpler function
+		GameLogic roomGameManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(first.Key));
+		roomGameManager.OnMeetingEnd();
 	}
 }

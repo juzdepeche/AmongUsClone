@@ -30,7 +30,9 @@ public enum ServerPackets
 	playerVentIn,
 	playerVentOut,
 	possibleVentsDirections,
-	playerVentUpdated
+	playerVentUpdated,
+	mapPosition,
+	setPartyLeader
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -44,7 +46,8 @@ public enum ClientPackets
 	interact,
 	taskDone,
 	vent,
-	goToSend
+	goToSend,
+	startGame
 }
 
 public class Packet : IDisposable
