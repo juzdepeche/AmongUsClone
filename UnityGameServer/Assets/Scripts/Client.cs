@@ -215,8 +215,7 @@ public class Client
 	{
 		player = NetworkManager.instance.InstantiatePlayer(_roomId);
 		int colorIndex = UnityEngine.Random.Range(0, 4);
-		Role playerRole = Role.Imposter;
-		player.Initialize(id, _roomId, _playerName, colorIndex, playerRole);
+		player.Initialize(id, _roomId, _playerName, colorIndex);
 
 		// Send all players to the new player
 		foreach (Client _client in Server.rooms[_roomId].clients.Values)
@@ -237,12 +236,6 @@ public class Client
 			{
 				ServerSend.SpawnPlayer(_client.id, player);
 			}
-		}
-
-		ServerSend.PlayerRole(id, playerRole);
-		foreach (Task _task in GameLogic.tasks.Values)
-		{
-			ServerSend.NewTask(id, _task);
 		}
 	}
 

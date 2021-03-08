@@ -27,13 +27,12 @@ public class Player : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 	}
 
-	public void Initialize(int _id, string _roomId, string _username, int _colorIndex, Role _role)
+	public void Initialize(int _id, string _roomId, string _username, int _colorIndex)
 	{
 		id = _id;
 		roomId = _roomId;
 		username = _username;
 		colorIndex = _colorIndex;
-		role = _role;
 
 		inputs = new bool[5];
 	}

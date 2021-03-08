@@ -73,7 +73,8 @@ public class ServerHandle
 			Player player = Server.clients[_fromClient].player;
 			if (player.canReportTarget)
 			{
-				GameLogic roomManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(_fromClient));
+				string _roomId = PlayerHelper.GetPlayerRoomId(_fromClient);
+				GameLogic roomManager = RoomManager.GetRoomGameManager(_roomId);
 				roomManager.CallMeeting(_fromClient);
 			}
 		}
@@ -86,7 +87,9 @@ public class ServerHandle
 		{
 			int _playerVoted = _packet.ReadInt();
 
-			VoteRegister.RegisterVote(_fromClient, _playerVoted);
+			string _roomId = PlayerHelper.GetPlayerRoomId(_fromClient);
+			VoteRegister _voteRegister = RoomManager.GetRoomVoteRegister(_roomId);
+			_voteRegister.RegisterVote(_fromClient, _playerVoted);
 		}
 	}
 

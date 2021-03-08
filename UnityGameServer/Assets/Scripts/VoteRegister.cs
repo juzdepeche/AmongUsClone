@@ -5,23 +5,25 @@ using UnityEngine;
 
 public class VoteRegister : MonoBehaviour
 {
-	private static Dictionary<int, bool> playerWhoVoted;
-	private static Dictionary<int, int> registeredVotes;
+	public string roomId;
+	private Dictionary<int, bool> playerWhoVoted;
+	private Dictionary<int, int> registeredVotes;
 
-	public static void ResetVotes()
+	public void ResetVotes()
 	{
 		playerWhoVoted = new Dictionary<int, bool>();
 		registeredVotes = new Dictionary<int, int>();
 
-		foreach (Player _player in PlayerHelper.GetAllAlivePlayers())
+		foreach (Player _player in PlayerHelper.GetAllAlivePlayers(roomId))
 		{
 			playerWhoVoted.Add(_player.id, false);
 			registeredVotes.Add(_player.id, 0);
 		}
 	}
 
-	public static void RegisterVote(int _fromId, int _toId)
+	public void RegisterVote(int _fromId, int _toId)
 	{
+		//todo roomid, insure that both players are in the same room
 		Player _playerWhoVoted = PlayerHelper.GetPlayerById(_fromId);
 		Player _playerGettingVoted = PlayerHelper.GetPlayerById(_toId);
 
@@ -50,7 +52,7 @@ public class VoteRegister : MonoBehaviour
 		}
 	}
 
-	private static void CountVotes()
+	private void CountVotes()
 	{
 		var first = registeredVotes.OrderByDescending(rv => rv.Value).ElementAt(0);
 		var second = registeredVotes.OrderByDescending(rv => rv.Value).ElementAt(1);
@@ -68,7 +70,7 @@ public class VoteRegister : MonoBehaviour
 		}
 
 		//todo roomid make a simpler function
-		GameLogic roomGameManager = RoomManager.GetRoomGameManager(PlayerHelper.GetPlayerRoomId(first.Key));
+		GameLogic roomGameManager = RoomManager.GetRoomGameManager(roomId);
 		roomGameManager.OnMeetingEnd();
 	}
 }

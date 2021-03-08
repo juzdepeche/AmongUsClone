@@ -29,6 +29,18 @@ public class GameLogic : MonoBehaviour
 		}
 	}
 
+	private void SendTasks()
+	{
+		var _players = PlayerHelper.GetAllPlayers(roomId);
+		foreach (Player _player in _players)
+		{
+			foreach (Task _task in GameLogic.tasks.Values)
+			{
+				ServerSend.NewTask(_player.id, _task);
+			}
+		}
+	}
+
 	public List<Task> GetTasks()
 	{
 		// todo optmize parent loop
@@ -39,7 +51,7 @@ public class GameLogic : MonoBehaviour
 
 	public void CallMeeting(int _reporterId)
 	{
-		VoteRegister.ResetVotes();
+		RoomManager.GetRoomVoteRegister(roomId).ResetVotes();
 		inMeeting = true;
 		MoveAllPlayersToTheMeetingArea();
 		ServerSend.StartMeeting(_reporterId);
@@ -54,9 +66,41 @@ public class GameLogic : MonoBehaviour
 	public void StartGame()
 	{
 		hasGameStarted = true;
+		AssignRoles();
 		MoveAllPlayersToTheMeetingArea();
 		tasks = new Dictionary<int, Task>();
 		CreateTasks(5);
+		SendTasks();
+	}
+
+	private void AssignRoles()
+	{
+		List<int> _playersIndex = new List<int>();
+		var _players = PlayerHelper.GetAllPlayers(roomId);
+
+		foreach (Player _player in _players)
+		{
+			_playersIndex.Add(_player.id);
+		}
+
+		//toto config imposter count
+		int imposterCount = _players.Count > 5 ? 2 : 1;
+		while (imposterCount > 0)
+		{
+			int _imposterId = _playersIndex[UnityEngine.Random.Range(0, _playersIndex.Count)];
+			_playersIndex.Remove(_imposterId);
+
+			PlayerHelper.GetPlayerById(_imposterId).role = Role.Imposter;
+			ServerSend.PlayerRole(_imposterId, Role.Imposter);
+
+			imposterCount--;
+		}
+
+		foreach (int _playerIndex in _playersIndex)
+		{
+			PlayerHelper.GetPlayerById(_playerIndex).role = Role.Crew;
+			ServerSend.PlayerRole(_playerIndex, Role.Crew);
+		}
 	}
 
 	private IEnumerator ShowVoteResults(float _time)
@@ -70,7 +114,7 @@ public class GameLogic : MonoBehaviour
 
 	private void MoveAllPlayersToTheMeetingArea()
 	{
-		var players = PlayerHelper.GetAllPlayers();
+		var players = PlayerHelper.GetAllPlayers(roomId);
 		var playersSeats = PlayerHelper.GetRandomSeatsForEveryPlayers(roomId);
 
 		int seatIndex = 0;

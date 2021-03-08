@@ -27,11 +27,26 @@ public class PlayerHelper : MonoBehaviour
 		return players;
 	}
 
-	public static List<Player> GetAllAlivePlayers()
+	public static List<Player> GetAllPlayers(string _roomId)
 	{
 		List<Player> players = new List<Player>();
 
-		foreach (Client _client in Server.clients.Values)
+		foreach (Client _client in Server.rooms[_roomId].clients.Values)
+		{
+			if (_client.player != null)
+			{
+				players.Add(_client.player);
+			}
+		}
+
+		return players;
+	}
+
+	public static List<Player> GetAllAlivePlayers(string _roomId)
+	{
+		List<Player> players = new List<Player>();
+
+		foreach (Client _client in Server.rooms[_roomId].clients.Values)
 		{
 			if (_client.player != null)
 			{
@@ -42,11 +57,11 @@ public class PlayerHelper : MonoBehaviour
 		return players;
 	}
 
-	public static List<Player> GetAllDeadPlayers()
+	public static List<Player> GetAllDeadPlayers(string _roomId)
 	{
 		List<Player> players = new List<Player>();
 
-		foreach (Client _client in Server.clients.Values)
+		foreach (Client _client in Server.rooms[_roomId].clients.Values)
 		{
 			if (_client.player != null)
 			{
@@ -72,7 +87,7 @@ public class PlayerHelper : MonoBehaviour
 		//todo: optimize by returning a shuffled list
 		List<Vector3> seatsPositions = new List<Vector3>();
 
-		var players = PlayerHelper.GetAllPlayers();
+		var players = PlayerHelper.GetAllPlayers(_roomId);
 		int playersToPlayerCount = players.Count;
 
 		GameLogic roomGameManager = RoomManager.GetRoomGameManager(_roomId);

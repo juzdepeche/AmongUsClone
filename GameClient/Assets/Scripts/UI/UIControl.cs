@@ -19,9 +19,11 @@ public class UIControl : MonoBehaviour
 
 	private void Start()
 	{
-		//todo: rendre invisible
-		// killButton.enabled = GameManager.players[Client.instance.myId].role == Role.Imposter;
-		startButton.enabled = false;
+		SetVentButtonVisibility(false);
+		SetKillButtonVisibility(false);
+		SetStartButtonVisibility(false);
+		SetUseButtonVisibility(false);
+		SetReportButtonVisibility(false);
 	}
 
 	public void onReportButtonPressed()
@@ -47,7 +49,7 @@ public class UIControl : MonoBehaviour
 	public void onStartButtonPressed()
 	{
 		ClientSend.StartGame();
-		startButton.enabled = false;
+		SetStartButtonVisibility(false);
 	}
 
 	public void setKillButtonInteractable(bool _isInteractable)
@@ -68,5 +70,30 @@ public class UIControl : MonoBehaviour
 	public void setVentButtonInteractable(bool _isInteractable)
 	{
 		ventButton.interactable = _isInteractable;
+	}
+
+	public void SetStartButtonVisibility(bool _isVisible)
+	{
+		startButton.gameObject.SetActive(_isVisible);
+	}
+
+	public void SetKillButtonVisibility(bool _isVisible)
+	{
+		killButton.gameObject.SetActive(_isVisible);
+	}
+
+	public void SetVentButtonVisibility(bool _isVisible)
+	{
+		ventButton.gameObject.SetActive(_isVisible);
+	}
+
+	public void SetUseButtonVisibility(bool _isVisible)
+	{
+		useButton.gameObject.SetActive(_isVisible);
+	}
+
+	public void SetReportButtonVisibility(bool _isVisible)
+	{
+		reportButton.gameObject.SetActive(_isVisible);
 	}
 }

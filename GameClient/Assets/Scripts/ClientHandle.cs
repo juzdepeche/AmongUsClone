@@ -48,6 +48,12 @@ public class ClientHandle : MonoBehaviour
 		int _role = _packet.ReadInt();
 
 		GameManager.players[_id].GetComponent<PlayerManager>().SetRole((Role)_role);
+
+		bool _isImposter = (Role)_role == Role.Imposter;
+		UIControl.instance.SetKillButtonVisibility(_isImposter);
+		UIControl.instance.SetVentButtonVisibility(_isImposter);
+		UIControl.instance.SetUseButtonVisibility(true);
+		UIControl.instance.SetReportButtonVisibility(true);
 	}
 
 	public static void PlayerDisconnected(Packet _packet)
@@ -228,6 +234,6 @@ public class ClientHandle : MonoBehaviour
 		bool _isPartyLeader = _packet.ReadBool();
 
 		PlayerHelper.GetThisPlayer().isPartyLeader = _isPartyLeader;
-		UIControl.instance.startButton.enabled = _isPartyLeader;
+		UIControl.instance.startButton.gameObject.SetActive(_isPartyLeader);
 	}
 }
