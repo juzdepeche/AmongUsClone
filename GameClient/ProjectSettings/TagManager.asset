@@ -15,7 +15,7 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
+  - CameraLight
   - 
   - 
   - 
@@ -56,6 +56,9 @@ TagManager:
     locked: 0
   - name: Player-Outline
     uniqueID: 2715226965
+    locked: 0
+  - name: Player-Username
+    uniqueID: 4043774613
     locked: 0
   - name: task
     uniqueID: 1981638005

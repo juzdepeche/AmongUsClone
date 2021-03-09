@@ -72,6 +72,12 @@ public class PlayerHelper : MonoBehaviour
 		return players;
 	}
 
+	public static List<Player> GetAlivePlayersByRole(string _roomId, Role _role)
+	{
+		//todo optimize parent loop
+		return Server.rooms[_roomId].clients.Values.Select(c => c.player).Where(p => !p.dead && p.role == _role).ToList();
+	}
+
 	public static Player GetPlayerById(int _id)
 	{
 		return GetAllPlayers().Where(p => p.id == _id).First();

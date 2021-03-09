@@ -118,10 +118,8 @@ public class ServerHandle
 			//todo check id instead for cheaters
 			if (player.taskIsDoing.taskType == (TaskType)_taskType)
 			{
-				player.taskIsDoing.done = true;
-				player.taskIsDoing.doneByPlayerId = _fromClient;
-				player.taskIsDoing.taskObject.GetComponent<SpriteRenderer>().color = Color.green;
-
+				TaskManager _roomTaskManager = RoomManager.GetRoomTaskManager(PlayerHelper.GetPlayerRoomId(_fromClient));
+				_roomTaskManager.TaskDone(player.taskIsDoing.id, _fromClient);
 				ServerSend.TaskDone(PlayerHelper.GetPlayerRoomId(_fromClient), player.taskIsDoing);
 			}
 		}
@@ -153,7 +151,7 @@ public class ServerHandle
 		}
 	}
 
-	public static void GoToSend(int _fromClient, Packet _packet)
+	public static void GoToVent(int _fromClient, Packet _packet)
 	{
 		int _clientIdCheck = _packet.ReadInt();
 		if (_fromClient == _clientIdCheck)

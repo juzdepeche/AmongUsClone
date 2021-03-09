@@ -21,6 +21,8 @@ public class PlayerManager : MonoBehaviour
 	public GameObject deadBodyPrefab;
 	public bool dead = false;
 	public int taskIsDoingId = -1;
+	public bool canDoTask = false;
+	public bool canCamera = false;
 	public GameObject ventArrowPrefab;
 	public List<GameObject> ventArrows = new List<GameObject>();
 

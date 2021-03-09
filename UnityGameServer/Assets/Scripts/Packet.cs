@@ -32,7 +32,12 @@ public enum ServerPackets
 	possibleVentsDirections,
 	playerVentUpdated,
 	mapPosition,
-	setPartyLeader
+	setPartyLeader,
+	showRoles,
+	hideRoles,
+	gameOver,
+	canCamera,
+	cameraPositions
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -46,7 +51,7 @@ public enum ClientPackets
 	interact,
 	taskDone,
 	vent,
-	goToSend,
+	goToVent,
 	startGame
 }
 

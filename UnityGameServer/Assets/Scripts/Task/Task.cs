@@ -21,4 +21,11 @@ public class Task
 
 		taskObject.SetActive(true);
 	}
+
+	public void TaskDone(int _fromClient)
+	{
+		done = true;
+		doneByPlayerId = _fromClient;
+		taskObject.GetComponent<SpriteRenderer>().color = Color.green;
+	}
 }

@@ -9,44 +9,20 @@ public class GameLogic : MonoBehaviour
 	public string roomId;
 	public bool hasGameStarted = false;
 	public static Dictionary<int, Vector3> deadBodyPosition = new Dictionary<int, Vector3>();
-	public List<GameObject> taskObjects = new List<GameObject>();
-	public static Dictionary<int, Task> tasks = new Dictionary<int, Task>();
 	public List<Transform> spawnPoints = new List<Transform>();
 	public List<Transform> preGameLobbySpawnPoints = new List<Transform>();
 	public List<GameObject> vents = new List<GameObject>();
 	public static float interactRadius = 3f;
 	public bool inMeeting = false;
+	public bool gameOver = false;
+	private int imposterCount = 0;
+	private TaskManager taskManager;
+	private CameraManager cameraManager;
 
-	private void CreateTasks(int taskNumber)
+	private void Start()
 	{
-		for (int i = 0; i < taskNumber || i <= taskObjects.Count; i++)
-		{
-			int randomIndex = UnityEngine.Random.Range(0, taskObjects.Count);
-			GameObject taskObject = taskObjects[randomIndex];
-			taskObjects.RemoveAt(randomIndex);
-			Task _task = new Task(i, taskObject, false, (TaskType)UnityEngine.Random.Range(1, Enum.GetNames(typeof(TaskType)).Length));
-			tasks.Add(i, _task);
-		}
-	}
-
-	private void SendTasks()
-	{
-		var _players = PlayerHelper.GetAllPlayers(roomId);
-		foreach (Player _player in _players)
-		{
-			foreach (Task _task in GameLogic.tasks.Values)
-			{
-				ServerSend.NewTask(_player.id, _task);
-			}
-		}
-	}
-
-	public List<Task> GetTasks()
-	{
-		// todo optmize parent loop
-		var notDoneTasks = tasks.Where(t => !t.Value.done).Select(t => t.Value).ToList();
-
-		return notDoneTasks;
+		taskManager = RoomManager.GetRoomTaskManager(roomId);
+		cameraManager = RoomManager.GetRoomCameraManager(roomId);
 	}
 
 	public void CallMeeting(int _reporterId)
@@ -65,12 +41,65 @@ public class GameLogic : MonoBehaviour
 
 	public void StartGame()
 	{
+		gameOver = false;
 		hasGameStarted = true;
 		AssignRoles();
+		ShowRoles();
+		StartCoroutine(HideRoles());
 		MoveAllPlayersToTheMeetingArea();
-		tasks = new Dictionary<int, Task>();
-		CreateTasks(5);
-		SendTasks();
+
+		//todo config task number
+		taskManager.CreateTasks(3);
+		taskManager.SendTasks();
+
+		cameraManager.SendCameras();
+	}
+
+	private void Update()
+	{
+		if (!hasGameStarted) return;
+
+		CheckCrewmateWinCondition();
+		// CheckImposterWinCondition();
+	}
+
+	private void CheckCrewmateWinCondition()
+	{
+		if (gameOver) return;
+
+		float perc = taskManager.GetTasksCompletedPercentage();
+		if (perc >= 1f)
+		{
+			gameOver = true;
+			ServerSend.GameOver(roomId, Role.Crew);
+			Debug.LogWarning("Game over, crewmates win");
+		}
+	}
+
+	private void CheckImposterWinCondition()
+	{
+		if (gameOver) return;
+
+		int _imposterCount = PlayerHelper.GetAlivePlayersByRole(roomId, Role.Imposter).Count();
+		int _crewmateCount = PlayerHelper.GetAlivePlayersByRole(roomId, Role.Crew).Count();
+		if (_imposterCount >= _crewmateCount)
+		{
+			gameOver = true;
+			ServerSend.GameOver(roomId, Role.Imposter);
+			Debug.LogWarning("Game over, imposters win");
+		}
+	}
+
+	private void ShowRoles()
+	{
+		ServerSend.ShowRoles(roomId, imposterCount);
+	}
+
+	private IEnumerator HideRoles()
+	{
+		yield return new WaitForSeconds(3f);
+
+		ServerSend.HideRoles(roomId);
 	}
 
 	private void AssignRoles()
@@ -84,8 +113,9 @@ public class GameLogic : MonoBehaviour
 		}
 
 		//toto config imposter count
-		int imposterCount = _players.Count > 5 ? 2 : 1;
-		while (imposterCount > 0)
+		imposterCount = _players.Count > 5 ? 2 : 1;
+		int imposterCounter = imposterCount;
+		while (imposterCounter > 0)
 		{
 			int _imposterId = _playersIndex[UnityEngine.Random.Range(0, _playersIndex.Count)];
 			_playersIndex.Remove(_imposterId);
@@ -93,7 +123,7 @@ public class GameLogic : MonoBehaviour
 			PlayerHelper.GetPlayerById(_imposterId).role = Role.Imposter;
 			ServerSend.PlayerRole(_imposterId, Role.Imposter);
 
-			imposterCount--;
+			imposterCounter--;
 		}
 
 		foreach (int _playerIndex in _playersIndex)

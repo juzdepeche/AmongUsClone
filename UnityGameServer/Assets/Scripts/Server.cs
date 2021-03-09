@@ -138,7 +138,7 @@ public class Server
 			{ (int)ClientPackets.interact, ServerHandle.Interact },
 			{ (int)ClientPackets.taskDone, ServerHandle.TaskDone },
 			{ (int)ClientPackets.vent, ServerHandle.Vent },
-			{ (int)ClientPackets.goToSend, ServerHandle.GoToSend },
+			{ (int)ClientPackets.goToVent, ServerHandle.GoToVent },
 			{ (int)ClientPackets.startGame, ServerHandle.StartGame }
 		};
 		Debug.Log("Initialized packets.");

@@ -323,6 +323,11 @@ public class Client : MonoBehaviour
 			{ (int)ServerPackets.playerVentUpdated, ClientHandle.PlayerVentUpdated },
 			{ (int)ServerPackets.mapPosition, ClientHandle.MapPosition },
 			{ (int)ServerPackets.setPartyLeader, ClientHandle.SetPartyLeader },
+			{ (int)ServerPackets.showRoles, ClientHandle.ShowRoles },
+			{ (int)ServerPackets.hideRoles, ClientHandle.HideRoles },
+			{ (int)ServerPackets.gameOver, ClientHandle.GameOver },
+			{ (int)ServerPackets.canCamera, ClientHandle.CanCamera },
+			{ (int)ServerPackets.cameraPositions, ClientHandle.CameraPositions },
 		};
 		Debug.Log("Initialized packets.");
 	}

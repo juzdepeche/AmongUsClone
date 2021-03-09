@@ -26,6 +26,16 @@ public class RoomManager : MonoBehaviour
 		return GameObject.Find($"/{_roomId}/GameManager").GetComponent<VoteRegister>();
 	}
 
+	public static TaskManager GetRoomTaskManager(string _roomId)
+	{
+		return GameObject.Find($"/{_roomId}/GameManager").GetComponent<TaskManager>();
+	}
+
+	public static CameraManager GetRoomCameraManager(string _roomId)
+	{
+		return GameObject.Find($"/{_roomId}/Cameras").GetComponent<CameraManager>();
+	}
+
 	public static Vector3 GetRoomPosition()
 	{
 		return new Vector3(RoomDistance * RoomManager.instance.roomCount, 0, 0);
@@ -36,6 +46,8 @@ public class RoomManager : MonoBehaviour
 		var room = Instantiate(RoomManager.instance.roomMapPrefab, RoomManager.GetRoomPosition(), Quaternion.identity);
 		room.GetComponentInChildren<GameLogic>().roomId = _roomId;
 		room.GetComponentInChildren<VoteRegister>().roomId = _roomId;
+		room.GetComponentInChildren<TaskManager>().roomId = _roomId;
+		room.GetComponentInChildren<CameraManager>().roomId = _roomId;
 		room.name = _roomId;
 		RoomManager.instance.roomCount++;
 

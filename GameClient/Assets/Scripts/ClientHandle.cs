@@ -136,7 +136,10 @@ public class ClientHandle : MonoBehaviour
 	{
 		bool _canDoTask = _packet.ReadBool();
 
-		UIControl.instance.setUseButtonInteractable(_canDoTask);
+		PlayerManager _player = PlayerHelper.GetThisPlayer();
+		_player.canDoTask = _canDoTask;
+
+		UIControl.instance.setUseButtonInteractable(_player.canDoTask || _player.canCamera);
 	}
 
 	public static void DoTask(Packet _packet)
@@ -235,5 +238,47 @@ public class ClientHandle : MonoBehaviour
 
 		PlayerHelper.GetThisPlayer().isPartyLeader = _isPartyLeader;
 		UIControl.instance.startButton.gameObject.SetActive(_isPartyLeader);
+	}
+
+	public static void ShowRoles(Packet _packet)
+	{
+		int _imposterCount = _packet.ReadInt();
+
+		UIRoleShowcase.instance.ShowUI(_imposterCount);
+	}
+
+	public static void HideRoles(Packet _packet)
+	{
+		UIRoleShowcase.instance.HideUI();
+	}
+
+	public static void GameOver(Packet _packet)
+	{
+		Role _winners = (Role)_packet.ReadInt();
+
+		UIGameResults.instance.ShowUI(_winners);
+	}
+
+	public static void CanCamera(Packet _packet)
+	{
+		bool _canCamera = _packet.ReadBool();
+
+		PlayerManager _player = PlayerHelper.GetThisPlayer();
+		_player.canCamera = _canCamera;
+
+		UIControl.instance.setUseButtonInteractable(_player.canDoTask || _player.canCamera);
+	}
+
+	public static void CameraPositions(Packet _packet)
+	{
+		List<CameraTarget> _cameras = new List<CameraTarget>();
+		int _cameraCount = _packet.ReadInt();
+
+		for (int i = 0; i < _cameraCount; i++)
+		{
+			_cameras.Add(new CameraTarget(_packet.ReadVector3(), _packet.ReadVector3()));
+		}
+
+		CameraManager.instance.SetCameras(_cameras);
 	}
 }

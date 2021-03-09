@@ -365,7 +365,7 @@ public class ServerSend
 		{
 			_packet.Write(_canVent);
 
-			SendTCPData(_playerId, _packet);
+			SendUDPData(_playerId, _packet);
 		}
 	}
 
@@ -431,6 +431,59 @@ public class ServerSend
 			_packet.Write(_isPartyLeader);
 
 			SendTCPData(_playerId, _packet);
+		}
+	}
+
+	public static void ShowRoles(string _roomId, int _imposterCount)
+	{
+		using (Packet _packet = new Packet((int)ServerPackets.showRoles))
+		{
+			_packet.Write(_imposterCount);
+
+			SendTCPDataToAll(_roomId, _packet);
+		}
+	}
+
+	public static void HideRoles(string _roomId)
+	{
+		using (Packet _packet = new Packet((int)ServerPackets.hideRoles))
+		{
+			SendTCPDataToAll(_roomId, _packet);
+		}
+	}
+
+	public static void GameOver(string _roomId, Role _winners)
+	{
+		using (Packet _packet = new Packet((int)ServerPackets.gameOver))
+		{
+			_packet.Write((int)_winners);
+
+			SendTCPDataToAll(_roomId, _packet);
+		}
+	}
+
+	public static void CanCamera(int _playerId, bool _canCamera)
+	{
+		using (Packet _packet = new Packet((int)ServerPackets.canCamera))
+		{
+			_packet.Write(_canCamera);
+
+			SendUDPData(_playerId, _packet);
+		}
+	}
+
+	public static void CameraPositions(string _roomId, List<CameraManager.CameraTarget> _cameras)
+	{
+		using (Packet _packet = new Packet((int)ServerPackets.cameraPositions))
+		{
+			_packet.Write(_cameras.Count);
+			foreach (var _camera in _cameras)
+			{
+				_packet.Write(_camera.camera.transform.position);
+				_packet.Write(_camera.cameraTarget.transform.position);
+			}
+
+			SendTCPDataToAll(_roomId, _packet);
 		}
 	}
 	#endregion
