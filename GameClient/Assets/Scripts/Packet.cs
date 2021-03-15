@@ -23,7 +23,7 @@ public enum ServerPackets
 	removeVoteResults,
 	canDoTask,
 	doTask,
-	playerLeftTask,
+	leaveTask,
 	newTask,
 	taskDone,
 	canVent,
@@ -37,7 +37,9 @@ public enum ServerPackets
 	hideRoles,
 	gameOver,
 	canCamera,
-	cameraPositions
+	cameraPositions,
+	openCamera,
+	leaveCamera
 }
 
 /// <summary>Sent from client to server.</summary>

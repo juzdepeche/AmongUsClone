@@ -19,9 +19,23 @@ public class UIControl : MonoBehaviour
 
 	private void Start()
 	{
+		HideUI();
+	}
+
+	public void ShowUI()
+	{
+		SetVentButtonVisibility(true);
+		SetKillButtonVisibility(true);
+		SetUseButtonVisibility(true);
+		SetReportButtonVisibility(true);
+	}
+
+	public void HideUI()
+	{
+		SetStartButtonVisibility(false);
+
 		SetVentButtonVisibility(false);
 		SetKillButtonVisibility(false);
-		SetStartButtonVisibility(false);
 		SetUseButtonVisibility(false);
 		SetReportButtonVisibility(false);
 	}
@@ -79,11 +93,13 @@ public class UIControl : MonoBehaviour
 
 	public void SetKillButtonVisibility(bool _isVisible)
 	{
+		_isVisible = _isVisible && PlayerHelper.GetThisPlayer().role == Role.Imposter;
 		killButton.gameObject.SetActive(_isVisible);
 	}
 
 	public void SetVentButtonVisibility(bool _isVisible)
 	{
+		_isVisible = _isVisible && PlayerHelper.GetThisPlayer().role == Role.Imposter;
 		ventButton.gameObject.SetActive(_isVisible);
 	}
 

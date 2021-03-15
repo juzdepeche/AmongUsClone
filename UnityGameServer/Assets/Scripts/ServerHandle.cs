@@ -99,10 +99,19 @@ public class ServerHandle
 		if (_fromClient == _clientIdCheck)
 		{
 			Player player = PlayerHelper.GetPlayerById(_fromClient);
-			if (player.taskTarget != null && !player.dead && !player.taskTarget.done && player.taskIsDoing == null)
+			InteractTarget _interactTarget = player.GetInteractTarget();
+			switch (_interactTarget)
 			{
-				player.taskIsDoing = player.taskTarget;
-				ServerSend.DoTask(_fromClient, player.taskTarget.id, player.taskTarget.taskType);
+				case InteractTarget.Camera:
+					player.OpenCamera();
+					break;
+				case InteractTarget.Task:
+					if (player.taskTarget != null && !player.dead && !player.taskTarget.done && player.taskIsDoing == null)
+					{
+						player.taskIsDoing = player.taskTarget;
+						ServerSend.DoTask(_fromClient, player.taskTarget.id, player.taskTarget.taskType);
+					}
+					break;
 			}
 		}
 	}

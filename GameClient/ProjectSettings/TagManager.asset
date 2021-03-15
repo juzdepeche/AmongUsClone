@@ -16,7 +16,7 @@ TagManager:
   - 
   - PostProcessing
   - CameraLight
-  - 
+  - PlayerLight
   - 
   - 
   - 
@@ -50,6 +50,9 @@ TagManager:
     locked: 0
   - name: Vent
     uniqueID: 1247035537
+    locked: 0
+  - name: item
+    uniqueID: 2619929465
     locked: 0
   - name: Player-Color
     uniqueID: 572490715

@@ -313,7 +313,7 @@ public class Client : MonoBehaviour
 			{ (int)ServerPackets.removeVoteResults, ClientHandle.RemoveVoteResults },
 			{ (int)ServerPackets.canDoTask, ClientHandle.CanDoTask },
 			{ (int)ServerPackets.doTask, ClientHandle.DoTask },
-			{ (int)ServerPackets.playerLeftTask, ClientHandle.PlayerLeftTask },
+			{ (int)ServerPackets.leaveTask, ClientHandle.LeaveTask },
 			{ (int)ServerPackets.newTask, ClientHandle.NewTask },
 			{ (int)ServerPackets.taskDone, ClientHandle.TaskDone },
 			{ (int)ServerPackets.canVent, ClientHandle.CanVent },
@@ -328,6 +328,8 @@ public class Client : MonoBehaviour
 			{ (int)ServerPackets.gameOver, ClientHandle.GameOver },
 			{ (int)ServerPackets.canCamera, ClientHandle.CanCamera },
 			{ (int)ServerPackets.cameraPositions, ClientHandle.CameraPositions },
+			{ (int)ServerPackets.openCamera, ClientHandle.OpenCamera },
+			{ (int)ServerPackets.leaveCamera, ClientHandle.LeaveCamera },
 		};
 		Debug.Log("Initialized packets.");
 	}

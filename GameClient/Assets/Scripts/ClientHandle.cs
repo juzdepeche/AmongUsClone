@@ -48,12 +48,7 @@ public class ClientHandle : MonoBehaviour
 		int _role = _packet.ReadInt();
 
 		GameManager.players[_id].GetComponent<PlayerManager>().SetRole((Role)_role);
-
-		bool _isImposter = (Role)_role == Role.Imposter;
-		UIControl.instance.SetKillButtonVisibility(_isImposter);
-		UIControl.instance.SetVentButtonVisibility(_isImposter);
-		UIControl.instance.SetUseButtonVisibility(true);
-		UIControl.instance.SetReportButtonVisibility(true);
+		UIControl.instance.ShowUI();
 	}
 
 	public static void PlayerDisconnected(Packet _packet)
@@ -153,7 +148,7 @@ public class ClientHandle : MonoBehaviour
 		TaskManager.instance.DoTask(_taskType);
 	}
 
-	public static void PlayerLeftTask(Packet _packet)
+	public static void LeaveTask(Packet _packet)
 	{
 		TaskType _taskType = (TaskType)_packet.ReadInt();
 
@@ -280,5 +275,17 @@ public class ClientHandle : MonoBehaviour
 		}
 
 		CameraManager.instance.SetCameras(_cameras);
+	}
+
+	public static void OpenCamera(Packet _packet)
+	{
+		UIControl.instance.HideUI();
+		UICameraStation.instance.ShowUI();
+	}
+
+	public static void LeaveCamera(Packet _packet)
+	{
+		UIControl.instance.ShowUI();
+		UICameraStation.instance.HideUI();
 	}
 }

@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
 	public Task taskIsDoing = null;
 	public GameObject currentVent = null;
 	public bool venting = false;
+	private bool hasCameraOpened = false;
 
 	private void Start()
 	{
@@ -70,6 +71,7 @@ public class Player : MonoBehaviour
 		CheckDoingTaskDistance();
 		LookForVent();
 		LookForCameraStation();
+		CheckCameraStationDistance();
 	}
 
 	private void LookForKillTarget()
@@ -132,6 +134,18 @@ public class Player : MonoBehaviour
 		ServerSend.CanDoTask(id, taskTarget != null);
 	}
 
+	private float GetClosestTaskDistance()
+	{
+		if (taskTarget == null)
+		{
+			return float.PositiveInfinity;
+		}
+		else
+		{
+			return Vector3.Distance(transform.position, taskTarget.position);
+		}
+	}
+
 	private void CheckDoingTaskDistance()
 	{
 		if (taskIsDoing == null) return;
@@ -139,7 +153,7 @@ public class Player : MonoBehaviour
 
 		if (distance > GameLogic.interactRadius)
 		{
-			ServerSend.PlayerLeftTask(id, taskIsDoing.taskType);
+			ServerSend.LeaveTask(id, taskIsDoing.taskType);
 			taskIsDoing = null;
 		}
 	}
@@ -162,17 +176,34 @@ public class Player : MonoBehaviour
 
 	private void LookForCameraStation()
 	{
-		CameraManager _cameraManager = RoomManager.GetRoomCameraManager(PlayerHelper.GetPlayerRoomId(id));
+		if (hasCameraOpened) return;
 
-		float _distance = Vector3.Distance(transform.position, _cameraManager.cameraStation.transform.position);
+		float _distance = GetCameraStationDistance();
 		if (_distance <= GameLogic.interactRadius)
 		{
-			ServerSend.CanVent(id, true);
+			ServerSend.CanCamera(id, true);
 		}
 		else
 		{
-			ServerSend.CanVent(id, false);
+			ServerSend.CanCamera(id, false);
 		}
+	}
+
+	private void CheckCameraStationDistance()
+	{
+		if (!hasCameraOpened) return;
+
+		float _distance = GetCameraStationDistance();
+		if (_distance > GameLogic.interactRadius)
+		{
+			ServerSend.LeaveCamera(id);
+		}
+	}
+
+	private float GetCameraStationDistance()
+	{
+		CameraManager _cameraManager = RoomManager.GetRoomCameraManager(PlayerHelper.GetPlayerRoomId(id));
+		return Vector3.Distance(transform.position, _cameraManager.cameraStation.transform.position);
 	}
 
 	/// <summary>Calculates the player's desired movement direction and moves him.</summary>
@@ -198,6 +229,12 @@ public class Player : MonoBehaviour
 		ServerSend.PlayerRespawned(id);
 	}
 
+	public void OpenCamera()
+	{
+		hasCameraOpened = true;
+		ServerSend.OpenCamera(id);
+	}
+
 	public void Die(bool _addDeadBody)
 	{
 		dead = true;
@@ -211,4 +248,25 @@ public class Player : MonoBehaviour
 
 		ServerSend.KillTarget(id, _addDeadBody);
 	}
+
+	public InteractTarget GetInteractTarget()
+	{
+		float _taskDistance = GetClosestTaskDistance();
+		float _cameraStationDistance = GetCameraStationDistance();
+
+		if (_taskDistance >= _cameraStationDistance)
+		{
+			return InteractTarget.Camera;
+		}
+		else
+		{
+			return InteractTarget.Task;
+		}
+	}
+}
+
+public enum InteractTarget
+{
+	Task,
+	Camera
 }

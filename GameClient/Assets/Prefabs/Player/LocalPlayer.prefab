@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6339274231239225407}
   - component: {fileID: 5086843093950396806}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Point Light 2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 0.82
   m_LightVolumeOpacity: 0
-  m_ApplyToSortingLayers: 0000000041a1f8a859f3a1b69140544adb831f225513d7a175651d7627e895e8
+  m_ApplyToSortingLayers: 0000000041a1f8a859f3a1b69140544adb831f225513d7a175651d7627e895e879f3289c951a07f1
   m_LightCookieSprite: {fileID: 0}
   m_UseNormalMap: 0
   m_LightOrder: 0
@@ -389,7 +389,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1579740331
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ecad49c2a77523147bae7de0fb132e3c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -471,7 +471,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 572490715
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: f496990462e83b34390ce03d47860b46, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -555,6 +555,8 @@ MonoBehaviour:
   deadBodyPrefab: {fileID: 8605677860862099140}
   dead: 0
   taskIsDoingId: -1
+  canDoTask: 0
+  canCamera: 0
   ventArrowPrefab: {fileID: 7923398124882114790, guid: f07b5d06577d919449fb0344ee65c034,
     type: 3}
   ventArrows: []

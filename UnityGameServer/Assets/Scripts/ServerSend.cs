@@ -325,9 +325,9 @@ public class ServerSend
 		}
 	}
 
-	public static void PlayerLeftTask(int _playerId, TaskType _taskType)
+	public static void LeaveTask(int _playerId, TaskType _taskType)
 	{
-		using (Packet _packet = new Packet((int)ServerPackets.playerLeftTask))
+		using (Packet _packet = new Packet((int)ServerPackets.leaveTask))
 		{
 			_packet.Write((int)_taskType);
 
@@ -484,6 +484,22 @@ public class ServerSend
 			}
 
 			SendTCPDataToAll(_roomId, _packet);
+		}
+	}
+
+	public static void OpenCamera(int _playerId)
+	{
+		using (Packet _packet = new Packet((int)ServerPackets.openCamera))
+		{
+			SendTCPData(_playerId, _packet);
+		}
+	}
+
+	public static void LeaveCamera(int _playerId)
+	{
+		using (Packet _packet = new Packet((int)ServerPackets.leaveCamera))
+		{
+			SendTCPData(_playerId, _packet);
 		}
 	}
 	#endregion
